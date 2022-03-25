@@ -4,11 +4,9 @@ const {nanoid} = require('nanoid');
 const app = express();
 const port = 8000;
 
-
 require('express-ws')(app);
 
 app.use(cors());
-
 
 const activeConnections = {};
 
@@ -18,25 +16,12 @@ app.ws('/draw', (ws, req) => {
     activeConnections[id] = ws;
     console.log('Client connected!');
 
-    let username = 'Anonymous';
 
     ws.on('message', (msg) => {
         const decodedMessage = JSON.parse(msg);
         switch (decodedMessage.type) {
-            case 'SET_USERNAME':
-                username = decodedMessage.username;
-                break;
-            case 'SEND_MESSAGE':
-                Object.keys(activeConnections).forEach(connId => {
-                    const conn = activeConnections[id];
-                    conn.send(JSON.stringify({
-                        type: 'NEW_MESSAGE',
-                        message: {
-                            username,
-                            text: decodedMessage.text,
-                        }
-                    }))
-                });
+            case 'NEW_PIXEL':
+                console.log(decodedMessage);
                 break;
             default:
                 console.log('Unknown message type ', decodedMessage.type);
