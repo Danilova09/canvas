@@ -9,28 +9,37 @@ require('express-ws')(app);
 app.use(cors());
 
 const activeConnections = {};
+const savedCoordinates = [];
 
 
 app.ws('/draw', (ws, req) => {
     const id = nanoid();
     activeConnections[id] = ws;
-    console.log('Client connected!');
 
+    ws.send(JSON.stringify({
+        type: 'PREV_PIXELS',
+        coordinates: savedCoordinates
+    }))
 
     ws.on('message', (msg) => {
         const decodedMessage = JSON.parse(msg);
         switch (decodedMessage.type) {
-            case 'NEW_PIXEL':
-                console.log(decodedMessage);
+            case 'SEND_PIXEL':
+                Object.keys(activeConnections).forEach(id => {
+                    const conn = activeConnections[id];
+                    savedCoordinates.push(decodedMessage.coordinates);
+                    conn.send(JSON.stringify({
+                        type: 'NEW_PIXEL',
+                        pixelCoordinates: decodedMessage.coordinates
+                    }))
+                })
                 break;
             default:
                 console.log('Unknown message type ', decodedMessage.type);
-
         }
-    })
+    });
 
     ws.on('close', (msg) => {
-        console.log('Client disconnected id = ', id);
         delete activeConnections[id];
     })
 })

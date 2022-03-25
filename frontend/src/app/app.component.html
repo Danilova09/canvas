@@ -1,9 +1,7 @@
-<div style="padding: 20px; display: flex; justify-content: center; align-items: self-start">
-  <label for="color">Choose color</label>
-  <input name="color" id="color" type="color" #color/>
-  <canvas width="400" height="400"
-          style="border: 10px solid #4e5358; margin-left: 20px;"
+<div class="main-block">
+  <label for="color">Pick color</label>
+  <input name="color" id="color" type="color" #colorInput/>
+  <canvas class="canvas" width="400" height="400"
           (click)="onCanvasClick($event)" #canvas>
-
   </canvas>
 </div>
